@@ -37,3 +37,7 @@ It allows users to register for events, manage seat limits, and prevent overbook
 - React (Create React App)
 - Axios
 - CSS (custom styling)
+
+##  Screenshot
+
+<img width="509" height="720" alt="Image" src="https://github.com/user-attachments/assets/0bd0b1fe-a61e-40ae-b7da-69c20fc6a410" />
