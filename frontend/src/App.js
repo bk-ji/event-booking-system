@@ -12,9 +12,19 @@ function App() {
   const [editingUserName, setEditingUserName] = useState('');
   const [editingEventId, setEditingEventId] = useState(null);
   const [editingEvent, setEditingEvent] = useState({});
+  const [selectedUserEvents, setSelectedUserEvents] = useState([]);
+  const [selectedUserName, setSelectedUserName] = useState('');
 
 
   const API_URL = 'http://localhost:5000';
+  
+  const viewUserEvents = (user) => {
+  axios.get(`${API_URL}/users/${user.id}/events`)
+    .then(res => {
+      setSelectedUserEvents(res.data);
+      setSelectedUserName(user.name);
+    });
+};
 
   // Fetch data
   useEffect(() => {
@@ -91,7 +101,7 @@ function App() {
     <div style={{ padding: '20px', fontFamily: 'Arial' }}>
       <h1>Event Booking Dashboard</h1>
 
-      {/* USERS */}
+     {/* USERS */}
 <section>
   <h2>Users</h2>
   <input
@@ -102,37 +112,52 @@ function App() {
   />
   <button onClick={addUser}>Add User</button>
 
-  <ul>
-    {users.map(user => (
-      <li key={user.id}>
-        {editingUserId === user.id ? (
-          <>
-            <input
-              value={editingUserName}
-              onChange={e => setEditingUserName(e.target.value)}
-            />
-            <button onClick={() => {
-              axios.put(`${API_URL}/users/${user.id}`, { name: editingUserName }).then(() => {
-                setEditingUserId(null);
-                fetchUsers();
-              });
-            }}>Save</button>
-          </>
-        ) : (
-          <>
-            {user.name}
-            <button onClick={() => {
-              setEditingUserId(user.id);
-              setEditingUserName(user.name);
-            }}>Edit</button>
-          </>
-        )}
-        <button onClick={() => deleteUser(user.id)}>Delete</button>
-      </li>
-    ))}
-  </ul>
-</section>
+  <>
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>
+          {editingUserId === user.id ? (
+            <>
+              <input
+                value={editingUserName}
+                onChange={e => setEditingUserName(e.target.value)}
+              />
+              <button onClick={() => {
+                axios.put(`${API_URL}/users/${user.id}`, { name: editingUserName }).then(() => {
+                  setEditingUserId(null);
+                  fetchUsers();
+                });
+              }}>Save</button>
+            </>
+          ) : (
+            <>
+              {user.name}
+              <button onClick={() => {
+                setEditingUserId(user.id);
+                setEditingUserName(user.name);
+              }}>Edit</button>
+            </>
+          )}
+          <button onClick={() => deleteUser(user.id)}>Delete</button>
+          <button onClick={() => viewUserEvents(user)}>View Events</button>
+        </li>
+      ))}
+    </ul>
 
+    {selectedUserEvents.length > 0 && (
+      <div style={{ marginTop: '10px', padding: '10px', border: '1px solid #ccc' }}>
+        <h3>Events booked by {selectedUserName}:</h3>
+        <ul>
+          {selectedUserEvents.map(event => (
+            <li key={event.id}>
+              {event.name} - {new Date(event.dateTime).toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+</>
+</section>
 
       {/* EVENTS */}
 <section>
